@@ -41,8 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions.cs" />
-    <Compile Include="IProcessQueues.cs" />
     <Compile Include="QueueProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
@@ -51,6 +49,10 @@
     <ProjectReference Include="..\JoshCodes.Core\JoshCodes.Core.csproj">
       <Project>{39c7060e-d6fe-4b54-803a-c26be8886dee}</Project>
       <Name>JoshCodes.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JoshCodes.QueueProcessors\JoshCodes.QueueProcessors.csproj">
+      <Project>{a7fba87f-a4e0-4be1-9db7-475f1ec5d48c}</Project>
+      <Name>JoshCodes.QueueProcessors</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
