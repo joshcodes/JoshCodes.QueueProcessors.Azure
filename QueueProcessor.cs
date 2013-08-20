@@ -110,16 +110,30 @@ namespace JoshCodes.QueueProcessors.Azure
                 {
                     // Let message get resent
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // Indicate a problem, unlock message in subscription
                     try
                     {
-                        // message.Complete();
+                        TerminateMessage(message, ex);
                     }
                     catch (Exception)
                     {
-                        message.Abandon();
+                        try
+                        {
+                            message.DeadLetter();
+                        }
+                        catch (Exception)
+                        {
+                            try
+                            {
+                                message.Abandon();
+                            }
+                            catch (Exception)
+                            {
+                                // TOTAL FAIL!!!
+                            }
+                        }
                     }
                 }
             }
