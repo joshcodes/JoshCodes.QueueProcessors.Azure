@@ -11,17 +11,17 @@ namespace JoshCodes.QueueProcessors.Azure
 {
     public abstract class QueueProcessor<TMessageParams> : IProcessQueues
     {
-        private SubscriptionClient receiveClient;
+        private QueueClient receiveClient;
         private static TopicClient sendClient;
         private static TopicClient errorClient;
 
         private const string MESSAGE_PROPERTY_KEY_MESSAGE_NAME = "MessageName";
-        private const string ERROR_TOPIC = "ERRORS";
+        private const string ERROR_QUEUE_NAME = "ERRORS";
 
-        protected QueueProcessor(string subscription, string topic)
+        protected QueueProcessor(string queueName)
         {
-            sendClient = TopicClient.CreateFromConnectionString(Settings.ServiceBusConnectionString, topic);
-            errorClient = TopicClient.CreateFromConnectionString(Settings.ServiceBusConnectionString, ERROR_TOPIC);
+            sendClient = TopicClient.CreateFromConnectionString(Settings.ServiceBusConnectionString, queueName);
+            errorClient = TopicClient.CreateFromConnectionString(Settings.ServiceBusConnectionString, ERROR_QUEUE_NAME);
 
             // Create the topic if it does not exist already
             string connectionString = Settings.ServiceBusConnectionString;
@@ -29,6 +29,13 @@ namespace JoshCodes.QueueProcessors.Azure
             var namespaceManager =
                 NamespaceManager.CreateFromConnectionString(connectionString);
 
+            if (!namespaceManager.QueueExists(queueName))
+            {
+                var queueDescription = new QueueDescription(queueName);
+                queueDescription.LockDuration = TimeSpan.FromMinutes(5.0);
+                namespaceManager.CreateQueue(queueDescription);
+            }
+            /*
             if (!namespaceManager.TopicExists(topic))
             {
                 namespaceManager.CreateTopic(topic);
@@ -37,11 +44,9 @@ namespace JoshCodes.QueueProcessors.Azure
             {
                 SqlFilter applicationInstanceFilter = new SqlFilter(String.Format("{0} = '{1}'", MESSAGE_PROPERTY_KEY_MESSAGE_NAME, subscription));
                 namespaceManager.CreateSubscription(topic, subscription, applicationInstanceFilter);
-            }
+            }*/
 
-            receiveClient =
-                SubscriptionClient.CreateFromConnectionString
-                        (connectionString, topic, subscription);
+            receiveClient = QueueClient.CreateFromConnectionString(connectionString, queueName, ReceiveMode.PeekLock);
         }
 
         protected enum MessageProcessStatus
