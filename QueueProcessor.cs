@@ -12,16 +12,16 @@ namespace JoshCodes.QueueProcessors.Azure
     public abstract class QueueProcessor<TMessageParams> : IProcessQueues
     {
         private QueueClient receiveClient;
-        private static TopicClient sendClient;
-        private static TopicClient errorClient;
+        private static QueueClient sendClient;
+        private static QueueClient errorClient;
 
         private const string MESSAGE_PROPERTY_KEY_MESSAGE_NAME = "MessageName";
         private const string ERROR_QUEUE_NAME = "ERRORS";
 
         protected QueueProcessor(string queueName)
         {
-            sendClient = TopicClient.CreateFromConnectionString(Settings.ServiceBusConnectionString, queueName);
-            errorClient = TopicClient.CreateFromConnectionString(Settings.ServiceBusConnectionString, ERROR_QUEUE_NAME);
+            sendClient = QueueClient.CreateFromConnectionString(Settings.ServiceBusConnectionString, queueName);
+            errorClient = QueueClient.CreateFromConnectionString(Settings.ServiceBusConnectionString, ERROR_QUEUE_NAME);
 
             // Create the topic if it does not exist already
             string connectionString = Settings.ServiceBusConnectionString;
