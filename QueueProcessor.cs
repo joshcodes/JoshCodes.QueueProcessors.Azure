@@ -93,6 +93,11 @@ namespace JoshCodes.QueueProcessors.Azure
             {
                 return;
             }
+            catch (AuthorizationFailedException)
+            {
+                // TODO: Figure out what's causing this
+                return;
+            }
 
             if (message != null)
             {
