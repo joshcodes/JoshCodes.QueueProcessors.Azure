@@ -98,6 +98,11 @@ namespace JoshCodes.QueueProcessors.Azure
                 // TODO: Figure out what's causing this
                 return;
             }
+            catch (UnauthorizedAccessException)
+            {
+                // TODO: Figure out what's causing this
+                return;
+            }
 
             if (message != null)
             {
@@ -109,7 +114,8 @@ namespace JoshCodes.QueueProcessors.Azure
                 }
                 catch (ReprocessMessageException)
                 {
-                    // TODO: Update resent count and send error if it gets too large
+                    // TODO: Update resent count and send error if it gets too large? Maybe not,
+                    // since this could be  polling strategy by an implementation.
                     // Let message get resent
                 }
                 catch (BrokenMessageException bmex)
